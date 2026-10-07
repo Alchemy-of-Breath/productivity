@@ -1,0 +1,8 @@
+{
+  "name": "northstar",
+  "version": "1.0.0",
+  "description": "Your North Star in every Claude Code session: your purpose, your organisation's, and this week's, month's, quarter's, year's and five years' focus, in the band above the prompt. /northstar stop hides it everywhere; /northstar start brings it back.",
+  "author": {
+    "name": "Malik Palamar"
+  }
+}

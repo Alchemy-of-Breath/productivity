@@ -1,0 +1,22 @@
+{
+  "title": "NORTH STAR",
+  "you": {
+    "label": "YOU",
+    "purpose": "Help small teams ship calm, well-built software"
+  },
+  "org": {
+    "label": "ACME",
+    "name": "Acme Studio",
+    "purpose": "Make reliable software affordable for every small business"
+  },
+  "focus": {
+    "week": "Ship the onboarding redesign",
+    "month": "Close 3 retainer clients",
+    "quarter": "Launch the self-serve plan"
+  },
+  "year": { "goal": "Self-serve plan pays for the team", "metric": "€40k MRR" },
+  "five_year": { "goal": "The default studio for EU small businesses", "metric": "1,000 clients" },
+  "alignment_note": "Calm, well-built software is exactly what Acme sells",
+  "live": { "label": "MRR", "file": "~/.cache/northstar-live.json" },
+  "placement": { "terminal": "band" }
+}

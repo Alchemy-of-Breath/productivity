@@ -1,0 +1,14 @@
+{
+  "name": "aob-productivity",
+  "description": "Alchemy of Breath team productivity mods for Claude Code.",
+  "owner": {
+    "name": "Alchemy of Breath"
+  },
+  "plugins": [
+    {
+      "name": "northstar",
+      "source": "./mods/northstar",
+      "description": "Your North Star above the prompt in every Claude Code session: purpose, organisation, and week/month/quarter/year/5-year focus. /northstar stop|start."
+    }
+  ]
+}
