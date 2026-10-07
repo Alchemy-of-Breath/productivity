@@ -26,11 +26,13 @@ It's drawn in the band above the prompt in the desktop app's **Code** tab and in
    > Set up my North Star using the northstar plugin's AGENT.md.
 
    It interviews you one question at a time and writes `~/.claude/northstar/northstar.json`.
+   Prefer to fill it in yourself? `/northstar init` writes a starter file with placeholder lines.
    [`AGENT.md`](AGENT.md) is written for the agent: it covers the interview, the file format, and
    troubleshooting.
 3. Run `/northstar` to see the result.
 
-Nothing personal lives in the plugin. Everyone gets the same code and their own file.
+Nothing personal lives in the plugin. Everyone gets the same code and their own file. Until that
+file exists the mod draws nothing; it never errors.
 
 ## Install
 
@@ -80,6 +82,7 @@ Docs: <https://code.claude.com/docs/en/plugins/org.md>,
 | Command | What it does |
 |---|---|
 | `/northstar` | Print the block |
+| `/northstar init` | Write a starter config with placeholder text (never overwrites an existing one) |
 | `/northstar focus week\|month\|quarter <text>` | Set one focus (no text clears it) |
 | `/northstar stop` | Hide it in every session from now on |
 | `/northstar start` | Show it again |
@@ -89,6 +92,7 @@ The mod re-reads the config every minute, so edits to the file show up without a
 
 ## Optional live row
 
+Off by default: no `live` in your file means no live row and no extra file reads.
 Point `live.file` at a JSON file `{ "text", "at", "status" }` that your own script or cron job
 keeps up to date. A sales number, a deploy status or an email warm-up stage all work. The mod
 shows the text and how old it is. See `AGENT.md` §5.

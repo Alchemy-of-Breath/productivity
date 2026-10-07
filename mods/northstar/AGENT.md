@@ -12,9 +12,11 @@ never edit the plugin's code to personalise it.
 1. Run `/northstar status` (or ask the person to). It prints the config path and whether
    the mod is on. The default path is `~/.claude/northstar/northstar.json`; the environment
    variable `NORTHSTAR_CONFIG` overrides it.
-2. If the file already exists, read it and treat this as an **update**: change only what
+2. If the person would rather edit it themselves, `/northstar init` writes a starter file
+   with placeholder lines (it never overwrites an existing file).
+3. If the file already exists, read it and treat this as an **update**: change only what
    the person asks to change, and keep the rest.
-3. If `/northstar` is not a known command, the plugin is not installed or not enabled. See
+4. If `/northstar` is not a known command, the plugin is not installed or not enabled. See
    *Install* in `README.md` before going further.
 
 ## 2. Interview the person
@@ -81,6 +83,7 @@ and show the person the result.
 ## 4. Day-to-day commands (tell the person about these)
 
 - `/northstar`: print the block.
+- `/northstar init`: write a starter file (only when none exists).
 - `/northstar focus week|month|quarter <text>`: set one focus. No text clears it.
 - `/northstar stop`: hide it in **every** session from now on (the choice persists).
 - `/northstar start`: show it again.

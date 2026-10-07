@@ -4,7 +4,9 @@
 //
 // Everything personal lives in one JSON file per person (see AGENT.md):
 //   ~/.claude/northstar/northstar.json   (or $NORTHSTAR_CONFIG)
-// The mod only reads and draws it; `/northstar focus ...` is the one write.
+// The mod only reads and draws it; `/northstar init` (a starter file, never
+// over an existing one) and `/northstar focus ...` are the only writes.
+// With no file it draws nothing.
 //
 // Where it draws:
 //   • Desktop app (Code tab): the band above the prompt.
@@ -139,14 +141,25 @@ async function start($: any) {
   enabled = (await $.store.get(STORE_ENABLED)) !== false
   await $.command.register({
     name: 'northstar',
-    description: 'Show your North Star · /northstar focus week|month|quarter <text> · /northstar stop|start',
+    description: 'Show your North Star · /northstar init · /northstar focus week|month|quarter <text> · /northstar stop|start',
   })
   $.clock.every(TICK_MS, () => tick($))
   await tick($)
 }
 
+// What `/northstar init` writes: placeholder text only, nothing personal.
+export const TEMPLATE: Star = {
+  title: 'NORTH STAR',
+  you: { label: 'YOU', purpose: 'Your purpose, in one line' },
+  org: { label: 'ORG', name: 'Your organisation', purpose: "Your organisation's purpose, in one line" },
+  focus: { week: '', month: '', quarter: '' },
+  year: { goal: 'The one outcome that matters most this year', metric: 'its number' },
+  five_year: { goal: 'What success looks like in five years', metric: 'its number' },
+}
+
 const SETUP_HELP = [
   'North Star is not set up yet.',
+  '  Run /northstar init for a starter file to edit, or',
   '  Ask your agent: "Set up my North Star using the northstar plugin\'s AGENT.md."',
   '  It interviews you and writes the config file named above.',
 ].join('\n')
@@ -207,6 +220,22 @@ export const register: Register = (on) => {
           '  config  ' + configPath + (star ? '' : '  (' + starError + ')'),
           star && star.live && star.live.file ? '  live    ' + expand(star.live.file) + (live ? '' : '  (not readable yet)') : '',
         ].filter(Boolean).join('\n'),
+      }
+    }
+
+    if (word === 'init') {
+      if (await $.fs.exists(configPath)) {
+        return { text: 'North Star: ' + configPath + ' already exists, so nothing was written. Edit it, or ask your agent to.' }
+      }
+      await $.fs.write(configPath, JSON.stringify(TEMPLATE, null, 2) + '\n')
+      lastText = ''
+      await tick($)
+      return {
+        text: [
+          'North Star: wrote a starter file to ' + configPath + '.',
+          '  Replace the placeholder lines with your own, or ask your agent:',
+          '  "Set up my North Star using the northstar plugin\'s AGENT.md."',
+        ].join('\n'),
       }
     }
 
