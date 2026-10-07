@@ -15,15 +15,23 @@ const STAR = {
 
 // Answers file reads from fixtures (a missing path throws, as the engine does)
 // and records writes.
-function stub(on: any, files: Record<string, string>, store: Record<string, unknown> = {}) {
+function stub(
+  on: any,
+  files: Record<string, string>,
+  store: Record<string, unknown> = {},
+  env: Record<string, string> = { HOME: '/home/ana' },
+) {
   const writes: { path: string; text: string }[] = []
+  const reads: string[] = []
   mock.clock(on)
   mock.store(on, store)
-  mock.env(on, { HOME: '/home/ana' })
+  mock.env(on, env)
   on('fs.read', ($: unknown, e: { path: string }) => {
+    reads.push(e.path)
     if (!(e.path in files)) throw new Error('ENOENT: ' + e.path)
     return { value: files[e.path] }
   })
+  on('fs.exists', ($: unknown, e: { path: string }) => ({ value: e.path in files }))
   on('fs.write', ($: unknown, e: { path: string; text: string }) => {
     writes.push(e)
     files[e.path] = e.text
@@ -33,7 +41,7 @@ function stub(on: any, files: Record<string, string>, store: Record<string, unkn
   on('ui.invalidate', () => ({ value: undefined }))
   on('session.start', () => ({ cwd: '/work' }))
   on('ui.render', () => ({ type: 'Text', props: {}, children: [''] }))
-  return writes
+  return Object.assign(writes, { reads })
 }
 
 const files = () => ({
@@ -146,4 +154,58 @@ test('/northstar prints the block as text', async ($, on) => {
   expect(text).toContain('ACME   Make reliable software affordable')
   expect(text).toContain('1YR    Self-serve pays for the team (€40k MRR)')
   expect(text).toContain('MRR    €31.2k')
+})
+
+test('/northstar init writes a placeholder file, then the band shows it', async ($, on) => {
+  const writes = stub(on, {})
+  await $.session.start({ surface: 'desktop', isInteractive: true, cwd: '/work' })
+
+  const { text } = await run($, 'init')
+
+  expect(text).toContain('wrote a starter file to ' + CONFIG)
+  expect(writes.length).toBe(1)
+  expect(writes[0]!.path).toBe(CONFIG)
+  const saved = JSON.parse(writes[0]!.text)
+  expect(saved.you.purpose).toBe('Your purpose, in one line')
+  expect(saved.live).toBeUndefined()
+  const ui = await $.ui.mount(band('desktop'))
+  expect(await ui.find({ type: 'Text', text: '🔭 NORTH STAR' })).toBeDefined()
+})
+
+test('/northstar init never overwrites an existing file, even an invalid one', async ($, on) => {
+  const writes = stub(on, { [CONFIG]: '{ not json' })
+  await $.session.start({ surface: 'desktop', isInteractive: true, cwd: '/work' })
+
+  expect((await run($, 'init')).text).toContain('already exists')
+  expect(writes.length).toBe(0)
+})
+
+test('no config: /northstar points at /northstar init', async ($, on) => {
+  stub(on, {})
+  await $.session.start({ surface: 'terminal', isInteractive: true, cwd: '/work' })
+  expect((await run($, '')).text).toContain('/northstar init')
+})
+
+test('paths follow each person\'s HOME (no machine-specific paths)', async ($, on) => {
+  const config = '/Users/sam/.claude/northstar/northstar.json'
+  stub(on, { [config]: JSON.stringify(STAR) }, {}, { HOME: '/Users/sam' })
+  await $.session.start({ surface: 'terminal', isInteractive: true, cwd: '/work' })
+  expect((await run($, 'status')).text).toContain('config  ' + config)
+  expect((await run($, 'status')).text).toContain('live    /Users/sam/.cache/northstar-live.json')
+})
+
+test('NORTHSTAR_CONFIG points at another file', async ($, on) => {
+  stub(on, { '/srv/team/sam.json': JSON.stringify(STAR) }, {}, { HOME: '/Users/sam', NORTHSTAR_CONFIG: '/srv/team/sam.json' })
+  await $.session.start({ surface: 'terminal', isInteractive: true, cwd: '/work' })
+  expect((await run($, '')).text).toContain('ACME   Make reliable software affordable')
+})
+
+test('the live row is off unless the file asks for one: no live file is read', async ($, on) => {
+  const { live: _, ...noLive } = STAR
+  const writes = stub(on, { [CONFIG]: JSON.stringify(noLive), [LIVE]: JSON.stringify({ text: '€31.2k' }) })
+  await $.session.start({ surface: 'desktop', isInteractive: true, cwd: '/work' })
+
+  const ui = await $.ui.mount(band('desktop'))
+  expect(await ui.find({ type: 'Text', text: '€31.2k' })).toBeUndefined()
+  expect(writes.reads).not.toContain(LIVE)
 })

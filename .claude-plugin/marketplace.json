@@ -8,7 +8,7 @@
     {
       "name": "northstar",
       "source": "./mods/northstar",
-      "description": "Your North Star above the prompt in every Claude Code session: purpose, organisation, and week/month/quarter/year/5-year focus. /northstar stop|start."
+      "description": "Your North Star above the prompt in every Claude Code session: purpose, organisation, and week/month/quarter/year/5-year focus. /northstar init|stop|start. Optional live row."
     }
   ]
 }
