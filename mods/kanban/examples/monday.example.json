@@ -1,0 +1,7 @@
+{
+  "boards": [
+    { "id": "REPLACE_WITH_BOARD_ID" }
+  ],
+  "refreshMinutes": 10,
+  "ignoreStatuses": ["INFO ONLY"]
+}

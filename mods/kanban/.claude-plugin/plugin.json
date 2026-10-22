@@ -1,0 +1,8 @@
+{
+  "name": "kanban",
+  "version": "1.0.0",
+  "description": "A kanban pane beside the chat. /kanban lists your open Monday.com tasks (read-only, through your own Monday connector, configured with a small JSON file) and, if you keep one, a personal Day/Week board. /kanban init writes a starter config; /kanban refresh re-fetches.",
+  "author": {
+    "name": "Malik Palamar"
+  }
+}
