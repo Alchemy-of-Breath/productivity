@@ -9,6 +9,11 @@
       "name": "northstar",
       "source": "./mods/northstar",
       "description": "Your North Star above the prompt in every Claude Code session: purpose, organisation, and week/month/quarter/year/5-year focus. /northstar init|stop|start. Optional live row."
+    },
+    {
+      "name": "kanban",
+      "source": "./mods/kanban",
+      "description": "A kanban pane beside the chat that lists your open Monday.com tasks (read-only, through your own Monday connector) and, if you keep one, a personal Day/Week board. /kanban init|refresh|status."
     }
   ]
 }
